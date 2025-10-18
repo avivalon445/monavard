@@ -1,0 +1,45 @@
+# ========================================
+# CustomBid Frontend - Environment Setup
+# ========================================
+#
+# INSTRUCTIONS:
+# 1. Create a file named ".env" in the frontend directory
+# 2. Copy the content below into the .env file
+# 3. Update the values as needed for your environment
+#
+# ========================================
+
+# Backend API URL
+# This should point to your backend server
+# Development: http://localhost:5000/api/v1
+# Production: https://api.yourdomain.com/api/v1
+VITE_API_BASE_URL=http://localhost:5000/api/v1
+
+# Application Name
+VITE_APP_NAME=CustomBid
+
+# Environment
+# Values: development, staging, production
+VITE_APP_ENV=development
+
+# ========================================
+# IMPORTANT NOTES:
+# ========================================
+#
+# 1. All Vite environment variables MUST start with VITE_
+# 2. Changes to .env require restarting the dev server
+# 3. Never commit .env file to version control
+# 4. Use .env.local for local overrides (also gitignored)
+#
+# ========================================
+# TROUBLESHOOTING:
+# ========================================
+#
+# If API calls fail:
+# - Verify backend is running on port 5000
+# - Check CORS is enabled in backend
+# - Check browser console for errors
+# - Try: curl http://localhost:5000/api/v1/health
+#
+# ========================================
+
