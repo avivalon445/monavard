@@ -104,9 +104,15 @@ ${categoryList}
     
     const processingTime = Date.now() - startTime;
     
-    // Parse AI response
+    // Parse AI response safely
     const aiResponse = completion.choices[0].message.content;
-    const parsed = JSON.parse(aiResponse);
+    let parsed;
+    try {
+      parsed = JSON.parse(aiResponse);
+    } catch (error) {
+      logger.error('Error parsing AI response:', error);
+      throw new ApiError(500, 'Invalid AI response format');
+    }
     
     // Validate response
     if (!parsed.category || !parsed.confidence || !parsed.reasoning) {

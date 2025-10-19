@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { bidService } from '@/services/bidService';
 import { Bid } from '@/types';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -8,7 +8,6 @@ import { getUserFriendlyError } from '@/utils/errorMessages';
 
 const SupplierBidDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [bid, setBid] = useState<Bid | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

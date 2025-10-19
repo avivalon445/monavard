@@ -22,7 +22,6 @@ const Settings: React.FC = () => {
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState<TabType>('profile');
-  const [profileData, setProfileData] = useState<CompleteProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');

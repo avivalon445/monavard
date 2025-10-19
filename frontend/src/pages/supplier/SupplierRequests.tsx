@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { requestService } from '@/services/requestService';
 import { Request } from '@/types';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -10,7 +10,6 @@ import SupplierCardLayout from '@/components/layout/SupplierCardLayout';
 import SupplierGridLayout from '@/components/layout/SupplierGridLayout';
 
 const SupplierRequests: React.FC = () => {
-  const navigate = useNavigate();
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -50,8 +49,8 @@ const SupplierRequests: React.FC = () => {
 
       const response = await requestService.getAvailableRequests(filterParams);
       if (response.success) {
-        setRequests(response.data || []);
-        setTotalPages(response.meta?.pagination?.pages || 1);
+        setRequests(response.data?.requests || []);
+        setTotalPages(response.data?.pagination?.total || 1);
       } else {
         setError('Failed to load requests');
       }

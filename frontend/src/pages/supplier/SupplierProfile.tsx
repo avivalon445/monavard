@@ -43,42 +43,42 @@ const SupplierProfile: React.FC = () => {
     try {
       const response = await supplierProfileService.getProfile();
       if (response.success) {
-        setProfile(response.data);
+        setProfile(response.data || null);
         setCompanyForm({
-          company_name: response.data.profile?.company_name || '',
-          description: response.data.profile?.description || '',
-          address: response.data.profile?.address || '',
-          city: response.data.profile?.city || '',
-          country: response.data.profile?.country || '',
-          website: response.data.profile?.website || '',
-          business_license: response.data.profile?.business_license || '',
-          tax_id: response.data.profile?.tax_id || '',
-          company_size: response.data.profile?.company_size || '',
-          year_established: response.data.profile?.year_established || '',
-          portfolio_description: response.data.profile?.portfolio_description || '',
-          insurance_coverage: response.data.profile?.insurance_coverage || '',
-          timezone: response.data.profile?.timezone || '',
-          business_hours: response.data.profile?.business_hours || ''
+          company_name: response.data?.profile?.company_name || '',
+          description: response.data?.profile?.description || '',
+          address: response.data?.profile?.address || '',
+          city: response.data?.profile?.city || '',
+          country: response.data?.profile?.country || '',
+          website: response.data?.profile?.website || '',
+          business_license: response.data?.profile?.business_license || '',
+          tax_id: response.data?.profile?.tax_id || '',
+          company_size: response.data?.profile?.company_size || '',
+          year_established: response.data?.profile?.year_established ? response.data.profile.year_established.toString() : '',
+          portfolio_description: response.data?.profile?.portfolio_description || '',
+          insurance_coverage: response.data?.profile?.insurance_coverage || '',
+          timezone: response.data?.profile?.timezone || '',
+          business_hours: response.data?.profile?.business_hours || ''
         });
         setUserForm({
-          first_name: response.data.user?.first_name || '',
-          last_name: response.data.user?.last_name || '',
-          phone: response.data.user?.phone || ''
+          first_name: response.data?.user?.first_name || '',
+          last_name: response.data?.user?.last_name || '',
+          phone: response.data?.user?.phone || ''
         });
         setNotificationForm({
-          email_new_requests: response.data.notification_settings?.email_new_requests || false,
-          email_bid_updates: response.data.notification_settings?.email_bid_updates || false,
-          email_order_updates: response.data.notification_settings?.email_order_updates || false,
-          sms_notifications: response.data.notification_settings?.sms_notifications || false,
-          push_notifications: response.data.notification_settings?.push_notifications || false,
-          notification_frequency: response.data.notification_settings?.notification_frequency || 'immediate'
+          email_new_requests: response.data?.notification_settings?.email_new_requests || false,
+          email_bid_updates: response.data?.notification_settings?.email_bid_updates || false,
+          email_order_updates: response.data?.notification_settings?.email_order_updates || false,
+          sms_notifications: response.data?.notification_settings?.sms_notifications || false,
+          push_notifications: response.data?.notification_settings?.push_notifications || false,
+          notification_frequency: response.data?.notification_settings?.notification_frequency || 'immediate'
         });
         setPrivacyForm({
-          profile_visibility: response.data.privacy_settings?.profile_visibility || 'public',
-          show_contact_info: response.data.privacy_settings?.show_contact_info || false,
-          show_portfolio: response.data.privacy_settings?.show_portfolio || true,
-          show_reviews: response.data.privacy_settings?.show_reviews || true,
-          allow_messages: response.data.privacy_settings?.allow_messages || true
+          profile_visibility: response.data?.privacy_settings?.profile_visibility || 'public',
+          show_contact_info: response.data?.privacy_settings?.show_contact_info || false,
+          show_portfolio: response.data?.privacy_settings?.show_portfolio || true,
+          show_reviews: response.data?.privacy_settings?.show_reviews || true,
+          allow_messages: response.data?.privacy_settings?.allow_messages || true
         });
       } else {
         setError(response.message || 'Failed to load profile data');
@@ -94,7 +94,7 @@ const SupplierProfile: React.FC = () => {
     try {
       const response = await categoryService.getAllCategories();
       if (response.success) {
-        setCategories(response.data);
+        setCategories(response.data || []);
       }
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -227,10 +227,6 @@ const SupplierProfile: React.FC = () => {
     }
   };
 
-  const formatCurrency = (amount: number | null | undefined) => {
-    if (amount === null || amount === undefined) return 'N/A';
-    return `€${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -307,7 +303,7 @@ const SupplierProfile: React.FC = () => {
       {/* Tab Content */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          <SupplierGridLayout columns={3} gap={6}>
+          <SupplierGridLayout columns="3" gap={6}>
             <SupplierCardLayout>
               <h4 className="text-sm font-medium text-gray-500">Company Name</h4>
               <p className="mt-1 text-lg font-semibold text-gray-900">{profile.profile.company_name}</p>
@@ -326,7 +322,7 @@ const SupplierProfile: React.FC = () => {
             </SupplierCardLayout>
           </SupplierGridLayout>
 
-          <SupplierGridLayout columns={2} gap={6}>
+          <SupplierGridLayout columns="2" gap={6}>
             <SupplierCardLayout>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Company Information</h3>
               <dl className="space-y-3">

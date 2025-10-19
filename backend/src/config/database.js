@@ -1,6 +1,33 @@
 const mysql = require('mysql2/promise');
 const logger = require('../utils/logger');
 
+/**
+ * Convert parameters to ensure proper types for MySQL compatibility
+ * @param {Array} params - Parameters to convert
+ * @returns {Array} Converted parameters
+ */
+const convertParameters = (params) => {
+  return params.map(param => {
+    if (param === null || param === undefined) {
+      return null;
+    }
+    if (param instanceof Date) {
+      return param.toISOString().slice(0, 19).replace('T', ' ');
+    }
+    if (typeof param === 'boolean') {
+      return param ? 1 : 0;
+    }
+    if (typeof param === 'number' && !Number.isFinite(param)) {
+      return null;
+    }
+    if (typeof param === 'object' && param !== null) {
+      // Convert objects to JSON strings
+      return JSON.stringify(param);
+    }
+    return param;
+  });
+};
+
 // Database connection pool configuration
 const poolConfig = {
   host: process.env.DB_HOST || 'localhost',
@@ -14,7 +41,18 @@ const poolConfig = {
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
   multipleStatements: false,
-  dateStrings: true
+  dateStrings: true,
+  // MySQL 9.x compatibility settings
+  supportBigNumbers: true,
+  bigNumberStrings: true,
+  typeCast: true,
+  // Additional compatibility settings
+  charset: 'utf8mb4',
+  timezone: 'Z',
+  // Disable SSL for local development, enable for production
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false
+  } : false
 };
 
 // Create connection pool
@@ -55,7 +93,7 @@ const testConnection = async () => {
 };
 
 /**
- * Execute a query
+ * Execute a query with enhanced error handling and parameter conversion
  * @param {string} sql - SQL query
  * @param {Array} params - Query parameters
  * @returns {Promise<Array>}
@@ -63,16 +101,39 @@ const testConnection = async () => {
 const query = async (sql, params = []) => {
   try {
     const db = await connectDatabase();
-    const [rows] = await db.execute(sql, params);
+    
+    // Convert parameters to ensure proper types for MySQL 9.x compatibility
+    const convertedParams = convertParameters(params);
+    
+    const [rows] = await db.execute(sql, convertedParams);
     return rows;
   } catch (error) {
-    logger.error('Database query error:', error);
+    logger.error('Database query error:', {
+      error: error.message,
+      sql: sql.substring(0, 100) + '...',
+      params: params
+    });
+    
+    // Handle specific MySQL errors
+    if (error.code === 'ER_STMT_EXECUTE_ERROR' || error.message.includes('mysqld_stmt_execute')) {
+      logger.error('MySQL statement execution error - attempting query without prepared statements');
+      try {
+        // Fallback to query method without prepared statements
+        const db = await connectDatabase();
+        const [rows] = await db.query(sql, params);
+        return rows;
+      } catch (fallbackError) {
+        logger.error('Fallback query also failed:', fallbackError);
+        throw error; // Throw original error
+      }
+    }
+    
     throw error;
   }
 };
 
 /**
- * Execute a transaction
+ * Execute a transaction with enhanced error handling
  * @param {Function} callback - Transaction callback function
  * @returns {Promise<any>}
  */
@@ -82,7 +143,31 @@ const transaction = async (callback) => {
   
   try {
     await connection.beginTransaction();
-    const result = await callback(connection);
+    
+    // Wrap the callback to handle parameter conversion
+    const wrappedCallback = async (conn) => {
+      // Create a wrapper connection with enhanced query method
+      const enhancedConnection = {
+        ...conn,
+        execute: async (sql, params = []) => {
+          const convertedParams = convertParameters(params);
+          
+          try {
+            return await conn.execute(sql, convertedParams);
+          } catch (error) {
+            if (error.code === 'ER_STMT_EXECUTE_ERROR' || error.message.includes('mysqld_stmt_execute')) {
+              logger.warn('Prepared statement failed, using query method');
+              return await conn.query(sql, params);
+            }
+            throw error;
+          }
+        }
+      };
+      
+      return await callback(enhancedConnection);
+    };
+    
+    const result = await wrappedCallback(connection);
     await connection.commit();
     return result;
   } catch (error) {
@@ -95,7 +180,7 @@ const transaction = async (callback) => {
 };
 
 /**
- * Call a stored procedure
+ * Call a stored procedure with enhanced error handling
  * @param {string} procedureName - Name of the stored procedure
  * @param {Array} params - Procedure parameters
  * @returns {Promise<any>}
@@ -105,10 +190,30 @@ const callProcedure = async (procedureName, params = []) => {
     const db = await connectDatabase();
     const placeholders = params.map(() => '?').join(', ');
     const sql = `CALL ${procedureName}(${placeholders})`;
-    const [results] = await db.execute(sql, params);
+    
+    // Convert parameters for compatibility
+    const convertedParams = convertParameters(params);
+    
+    const [results] = await db.execute(sql, convertedParams);
     return results;
   } catch (error) {
     logger.error(`Error calling procedure ${procedureName}:`, error);
+    
+    // Handle specific MySQL errors for stored procedures
+    if (error.code === 'ER_STMT_EXECUTE_ERROR' || error.message.includes('mysqld_stmt_execute')) {
+      logger.warn(`Prepared statement failed for procedure ${procedureName}, using query method`);
+      try {
+        const db = await connectDatabase();
+        const placeholders = params.map(() => '?').join(', ');
+        const sql = `CALL ${procedureName}(${placeholders})`;
+        const [results] = await db.query(sql, params);
+        return results;
+      } catch (fallbackError) {
+        logger.error(`Fallback query for procedure ${procedureName} also failed:`, fallbackError);
+        throw error; // Throw original error
+      }
+    }
+    
     throw error;
   }
 };

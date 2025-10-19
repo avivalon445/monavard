@@ -1,6 +1,6 @@
 import axiosInstance from '@/utils/axios';
 import { API_ENDPOINTS } from '@/config/api';
-import { ApiResponse, PaginatedResponse, Bid, CreateBidData } from '@/types';
+import { ApiResponse, Bid, CreateBidData } from '@/types';
 
 export interface BidFilters {
   status?: string;

@@ -5,7 +5,6 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import Alert from '@/components/common/Alert';
 import SupplierPageWrapper from '@/components/layout/SupplierPageWrapper';
 import SupplierCardLayout from '@/components/layout/SupplierCardLayout';
-import SupplierGridLayout from '@/components/layout/SupplierGridLayout';
 
 type SettingsTab = 'profile' | 'security' | 'notifications' | 'privacy' | 'activity' | 'danger';
 
@@ -57,26 +56,26 @@ const SupplierSettingsPage: React.FC = () => {
     try {
       const response = await supplierSettingsService.getSettings();
       if (response.success) {
-        setSettings(response.data);
+        setSettings(response.data || null);
         setUserForm({
-          first_name: response.data.user.first_name,
-          last_name: response.data.user.last_name,
-          phone: response.data.user.phone
+          first_name: response.data?.user?.first_name || '',
+          last_name: response.data?.user?.last_name || '',
+          phone: response.data?.user?.phone || ''
         });
         setNotificationForm({
-          email_new_requests: response.data.notification_settings.email_new_requests,
-          email_bid_updates: response.data.notification_settings.email_bid_updates,
-          email_order_updates: response.data.notification_settings.email_order_updates,
-          sms_notifications: response.data.notification_settings.sms_notifications,
-          push_notifications: response.data.notification_settings.push_notifications,
-          notification_frequency: response.data.notification_settings.notification_frequency
+          email_new_requests: response.data?.notification_settings?.email_new_requests || false,
+          email_bid_updates: response.data?.notification_settings?.email_bid_updates || false,
+          email_order_updates: response.data?.notification_settings?.email_order_updates || false,
+          sms_notifications: response.data?.notification_settings?.sms_notifications || false,
+          push_notifications: response.data?.notification_settings?.push_notifications || false,
+          notification_frequency: response.data?.notification_settings?.notification_frequency || 'immediate'
         });
         setPrivacyForm({
-          profile_visibility: response.data.privacy_settings.profile_visibility,
-          show_contact_info: response.data.privacy_settings.show_contact_info,
-          show_portfolio: response.data.privacy_settings.show_portfolio,
-          show_reviews: response.data.privacy_settings.show_reviews,
-          allow_messages: response.data.privacy_settings.allow_messages
+          profile_visibility: response.data?.privacy_settings?.profile_visibility || 'public',
+          show_contact_info: response.data?.privacy_settings?.show_contact_info || false,
+          show_portfolio: response.data?.privacy_settings?.show_portfolio || true,
+          show_reviews: response.data?.privacy_settings?.show_reviews || true,
+          allow_messages: response.data?.privacy_settings?.allow_messages || true
         });
       } else {
         setError(response.message || 'Failed to load settings');
@@ -92,7 +91,7 @@ const SupplierSettingsPage: React.FC = () => {
     try {
       const response = await supplierSettingsService.getAccountActivity(50);
       if (response.success) {
-        setActivities(response.data);
+        setActivities(response.data || []);
       }
     } catch (err) {
       console.error('Error fetching activities:', err);

@@ -391,10 +391,20 @@ const getCurrentUser = async (userId) => {
 
   const user = users[0];
   
-  // Parse profile data
+  // Parse profile data safely
   if (user.profile_data) {
-    user.profile = JSON.parse(user.profile_data);
-    delete user.profile_data;
+    try {
+      // Check if it's already an object or needs parsing
+      if (typeof user.profile_data === 'string') {
+        user.profile = JSON.parse(user.profile_data);
+      } else if (typeof user.profile_data === 'object') {
+        user.profile = user.profile_data;
+      }
+      delete user.profile_data;
+    } catch (error) {
+      logger.error('Error parsing profile data:', error);
+      user.profile = null;
+    }
   }
 
   return user;

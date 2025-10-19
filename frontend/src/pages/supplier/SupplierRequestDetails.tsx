@@ -36,7 +36,7 @@ const SupplierRequestDetails: React.FC = () => {
       const response = await requestService.getSupplierRequestById(Number(id));
       
       if (response.success) {
-        setRequest(response.data);
+        setRequest(response.data || null);
       } else {
         setError('Failed to load request details');
       }
@@ -74,23 +74,6 @@ const SupplierRequestDetails: React.FC = () => {
     return 'Budget not specified';
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusStyles: { [key: string]: string } = {
-      open_for_bids: 'bg-blue-100 text-blue-800',
-      bids_received: 'bg-green-100 text-green-800',
-    };
-
-    const statusLabels: { [key: string]: string } = {
-      open_for_bids: 'Open for Bids',
-      bids_received: 'Bids Received',
-    };
-
-    return (
-      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusStyles[status] || 'bg-gray-100 text-gray-800'}`}>
-        {statusLabels[status] || status}
-      </span>
-    );
-  };
 
   const getTimeFlexibilityColor = (flexibility: string) => {
     const colors: { [key: string]: string } = {
@@ -246,65 +229,72 @@ const SupplierRequestDetails: React.FC = () => {
               <SupplierCardLayout>
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Customer Priorities</h2>
                 <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Quality</span>
-                      <span className={`text-sm font-semibold ${getPriorityColor(request.priorities.quality)}`}>
-                        {request.priorities.quality}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${request.priorities.quality}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Price</span>
-                      <span className={`text-sm font-semibold ${getPriorityColor(request.priorities.price)}`}>
-                        {request.priorities.price}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-green-600 h-2 rounded-full"
-                        style={{ width: `${request.priorities.price}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Speed</span>
-                      <span className={`text-sm font-semibold ${getPriorityColor(request.priorities.speed)}`}>
-                        {request.priorities.speed}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-yellow-600 h-2 rounded-full"
-                        style={{ width: `${request.priorities.speed}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Features</span>
-                      <span className={`text-sm font-semibold ${getPriorityColor(request.priorities.features)}`}>
-                        {request.priorities.features}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-purple-600 h-2 rounded-full"
-                        style={{ width: `${request.priorities.features}%` }}
-                      ></div>
-                    </div>
-                  </div>
+                  {(() => {
+                    const priorities = request.priorities ? JSON.parse(request.priorities) : { quality: 50, price: 50, speed: 50, features: 50 };
+                    return (
+                      <>
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-gray-700">Quality</span>
+                            <span className={`text-sm font-semibold ${getPriorityColor(priorities.quality)}`}>
+                              {priorities.quality}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-blue-600 h-2 rounded-full"
+                              style={{ width: `${priorities.quality}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-gray-700">Price</span>
+                            <span className={`text-sm font-semibold ${getPriorityColor(priorities.price)}`}>
+                              {priorities.price}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-green-600 h-2 rounded-full"
+                              style={{ width: `${priorities.price}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-gray-700">Speed</span>
+                            <span className={`text-sm font-semibold ${getPriorityColor(priorities.speed)}`}>
+                              {priorities.speed}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-yellow-600 h-2 rounded-full"
+                              style={{ width: `${priorities.speed}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-gray-700">Features</span>
+                            <span className={`text-sm font-semibold ${getPriorityColor(priorities.features)}`}>
+                              {priorities.features}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-purple-600 h-2 rounded-full"
+                              style={{ width: `${priorities.features}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </SupplierCardLayout>
             )}
@@ -342,7 +332,7 @@ const SupplierRequestDetails: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Customer</span>
-                  <p className="font-medium text-gray-900">{request.customer_name}</p>
+                  <p className="font-medium text-gray-900">Customer</p>
                 </div>
                 {request.expires_at && (
                   <div>
@@ -357,9 +347,9 @@ const SupplierRequestDetails: React.FC = () => {
             <SupplierCardLayout>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
               <div className="space-y-3">
-                {request.has_bid ? (
+                {(request.has_bid ?? false) ? (
                   <Link
-                    to={`/supplier/bids/${request.my_bid_id}`}
+                    to={`/supplier/bids/${request.my_bid_id ?? 0}`}
                     className="btn btn-primary w-full text-center"
                   >
                     View My Bid

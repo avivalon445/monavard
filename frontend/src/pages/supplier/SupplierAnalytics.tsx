@@ -90,7 +90,7 @@ const SupplierAnalytics: React.FC = () => {
     return (
       <div className="space-y-6">
         {/* Key Metrics Cards */}
-        <SupplierGridLayout columns={4} gap={4}>
+        <SupplierGridLayout columns="4" gap={4}>
           <SupplierCardLayout className="border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
               <div>
@@ -149,7 +149,7 @@ const SupplierAnalytics: React.FC = () => {
         </SupplierGridLayout>
 
         {/* Performance Overview */}
-        <SupplierGridLayout columns={2} gap={4}>
+        <SupplierGridLayout columns="2" gap={4}>
           <SupplierCardLayout>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Bid Performance</h3>
             <div className="space-y-4">
@@ -223,7 +223,7 @@ const SupplierAnalytics: React.FC = () => {
     return (
       <div className="space-y-6">
         {/* Performance Metrics */}
-        <SupplierGridLayout columns={3} gap={4}>
+        <SupplierGridLayout columns="3" gap={4}>
           <SupplierCardLayout>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Bid Statistics</h3>
             <div className="space-y-3">
@@ -321,7 +321,7 @@ const SupplierAnalytics: React.FC = () => {
     return (
       <div className="space-y-6">
         {/* Financial Overview */}
-        <SupplierGridLayout columns={3} gap={4}>
+        <SupplierGridLayout columns="3" gap={4}>
           <SupplierCardLayout className="border-l-4 border-green-500">
             <div className="text-center">
               <p className="text-3xl font-bold text-green-600">{formatCurrency(financial.total_revenue)}</p>
@@ -345,7 +345,7 @@ const SupplierAnalytics: React.FC = () => {
         </SupplierGridLayout>
 
         {/* Revenue Breakdown */}
-        <SupplierGridLayout columns={2} gap={4}>
+        <SupplierGridLayout columns="2" gap={4}>
           <SupplierCardLayout>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Breakdown</h3>
             <div className="space-y-4">
@@ -483,7 +483,7 @@ const SupplierAnalytics: React.FC = () => {
     return (
       <div className="space-y-6">
         {/* Competitive Analysis */}
-        <SupplierGridLayout columns={2} gap={4}>
+        <SupplierGridLayout columns="2" gap={4}>
           <SupplierCardLayout>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Market Participation</h3>
             <div className="space-y-4">

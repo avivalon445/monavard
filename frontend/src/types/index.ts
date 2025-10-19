@@ -17,13 +17,14 @@ export type RelatedType = 'bid' | 'order' | 'request' | 'message' | 'payment';
 
 export interface Notification {
   id: number;
+  user_id: number;
   type: NotificationType;
   title: string;
   message: string;
   related_id?: number;
   related_type?: RelatedType;
   is_read: boolean;
-  is_pushed: boolean;
+  is_pushed?: boolean;
   priority: NotificationPriority;
   expires_at?: string;
   created_at: string;
@@ -110,6 +111,11 @@ export interface Request {
   min_bid_price?: number;
   max_bid_price?: number;
   avg_bid_price?: number;
+  // Extended fields from joins
+  pending_bids?: number;
+  has_bid?: boolean;
+  customer_name?: string;
+  my_bid_id?: number;
 }
 
 // Bid Types
@@ -138,6 +144,22 @@ export interface Bid {
   anonymous_rating?: number;
   anonymous_review_count?: number;
   request_title?: string;
+  // Extended fields from joins
+  company_name?: string;
+  supplier_first_name?: string;
+  supplier_last_name?: string;
+  supplier_rating?: number;
+  total_completed_orders?: number;
+  delivery_days?: number;
+  message?: string;
+  request_description?: string;
+  budget_min?: number;
+  budget_max?: number;
+  request_delivery_date?: string;
+  request_status?: string;
+  customer_anonymous_name?: string;
+  customer_rating?: number;
+  customer_review_count?: number;
 }
 
 // Bid Creation Types
@@ -407,29 +429,6 @@ export interface SupplierDashboardMetrics {
   available_requests: number;
 }
 
-// Notification Types
-export type NotificationType = 
-  | 'bid_received' 
-  | 'bid_accepted' 
-  | 'bid_rejected' 
-  | 'order_update' 
-  | 'payment_received' 
-  | 'message_received' 
-  | 'system_alert';
-
-export interface Notification {
-  id: number;
-  user_id: number;
-  type: NotificationType;
-  title: string;
-  message: string;
-  related_id?: number;
-  related_type?: string;
-  is_read: boolean;
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  created_at: string;
-  read_at?: string;
-}
 
 // API Response Types
 export interface ApiResponse<T = any> {
@@ -456,6 +455,16 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
   totalPages: number;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages?: number;
+  totalPages?: number;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 }
 
 // Auth Types

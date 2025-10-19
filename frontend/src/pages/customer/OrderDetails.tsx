@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { OrderDetails as OrderDetailsType, OrderStatus } from '@/types';
 import { getOrderById, cancelOrder, confirmDelivery, completeOrder } from '@/services/orderService';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -8,7 +8,6 @@ import { getUserFriendlyError } from '@/utils/errorMessages';
 
 const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [order, setOrder] = useState<OrderDetailsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

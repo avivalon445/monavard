@@ -6,8 +6,6 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import Alert from '@/components/common/Alert';
 import { getUserFriendlyError } from '@/utils/errorMessages';
 import SupplierPageWrapper from '@/components/layout/SupplierPageWrapper';
-import SupplierCardLayout from '@/components/layout/SupplierCardLayout';
-import SupplierGridLayout from '@/components/layout/SupplierGridLayout';
 
 const SupplierBids: React.FC = () => {
   const navigate = useNavigate();
@@ -49,15 +47,6 @@ const SupplierBids: React.FC = () => {
     }
   };
 
-  const handleFilterChange = (newFilters: Partial<typeof filters>) => {
-    setFilters({ ...filters, ...newFilters });
-    setCurrentPage(1);
-    
-    // Update URL params
-    const params = new URLSearchParams();
-    if (newFilters.status) params.set('status', newFilters.status);
-    setSearchParams(params);
-  };
 
   const getStatusBadge = (status: string) => {
     const statusStyles: { [key: string]: string } = {

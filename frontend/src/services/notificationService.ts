@@ -271,7 +271,7 @@ class NotificationService {
       return null;
     }
 
-    const { type, related_type, related_id } = notification;
+    const { related_type, related_id } = notification;
 
     switch (related_type) {
       case 'bid':

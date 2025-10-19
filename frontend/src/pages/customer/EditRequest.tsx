@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { requestService } from '@/services/requestService';
 import { categoryService, Category } from '@/services/categoryService';
-import { Request } from '@/types';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import Alert from '@/components/common/Alert';
 import { getUserFriendlyError } from '@/utils/errorMessages';
@@ -97,9 +96,9 @@ const EditRequest: React.FC = () => {
         setFormData({
           title: request.title,
           description: request.description,
-          category_id: request.category_id,
-          budget_min: request.budget_min,
-          budget_max: request.budget_max,
+          category_id: request.category_id ?? null,
+          budget_min: request.budget_min ?? null,
+          budget_max: request.budget_max ?? null,
           currency: request.currency || 'EUR',
           delivery_date: request.delivery_date || '',
           time_flexibility: request.time_flexibility || 'critical',
@@ -187,6 +186,9 @@ const EditRequest: React.FC = () => {
       const submitData = {
         ...formData,
         priorities: JSON.stringify(formData.priorities),
+        budget_min: formData.budget_min === null ? undefined : formData.budget_min,
+        budget_max: formData.budget_max === null ? undefined : formData.budget_max,
+        category_id: formData.category_id === null ? undefined : formData.category_id,
       };
       
       const response = await requestService.updateRequest(Number(id), submitData);

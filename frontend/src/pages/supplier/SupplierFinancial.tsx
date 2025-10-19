@@ -40,7 +40,7 @@ const SupplierFinancial: React.FC = () => {
         case 'overview':
           const summaryResponse = await supplierFinancialService.getFinancialSummary(filters.period || '30d');
           if (summaryResponse.success) {
-            setSummary(summaryResponse.data);
+            setSummary(summaryResponse.data || null);
           } else {
             setError(summaryResponse.message || 'Failed to load financial summary');
           }
@@ -48,7 +48,7 @@ const SupplierFinancial: React.FC = () => {
         case 'reports':
           const reportResponse = await supplierFinancialService.getFinancialReport(filters);
           if (reportResponse.success) {
-            setReport(reportResponse.data);
+            setReport(reportResponse.data || null);
           } else {
             setError(reportResponse.message || 'Failed to load financial report');
           }
@@ -56,7 +56,7 @@ const SupplierFinancial: React.FC = () => {
         case 'tax':
           const taxResponse = await supplierFinancialService.getTaxReport(filters);
           if (taxResponse.success) {
-            setTaxReport(taxResponse.data);
+            setTaxReport(taxResponse.data || null);
           } else {
             setError(taxResponse.message || 'Failed to load tax report');
           }
@@ -64,7 +64,7 @@ const SupplierFinancial: React.FC = () => {
         case 'commission':
           const commissionResponse = await supplierFinancialService.getCommissionBreakdown(filters);
           if (commissionResponse.success) {
-            setCommissionBreakdown(commissionResponse.data);
+            setCommissionBreakdown(commissionResponse.data || null);
           } else {
             setError(commissionResponse.message || 'Failed to load commission breakdown');
           }
@@ -196,7 +196,7 @@ const SupplierFinancial: React.FC = () => {
       {/* Tab Content */}
       {activeTab === 'overview' && summary && (
         <div className="space-y-6">
-          <SupplierGridLayout columns={4} gap={6}>
+          <SupplierGridLayout columns="4" gap={6}>
             <SupplierCardLayout>
               <h4 className="text-sm font-medium text-gray-500">Total Revenue</h4>
               <p className="mt-1 text-3xl font-semibold text-gray-900">{formatCurrency(summary.current_period.total_revenue)}</p>
@@ -224,7 +224,7 @@ const SupplierFinancial: React.FC = () => {
             </SupplierCardLayout>
           </SupplierGridLayout>
 
-          <SupplierGridLayout columns={3} gap={6}>
+          <SupplierGridLayout columns="3" gap={6}>
             <SupplierCardLayout>
               <h4 className="text-sm font-medium text-gray-500">Completed Orders</h4>
               <p className="mt-1 text-2xl font-semibold text-green-600">{summary.current_period.completed_orders}</p>
@@ -248,7 +248,7 @@ const SupplierFinancial: React.FC = () => {
         <div className="space-y-6">
           <SupplierCardLayout>
             <h3 className="text-lg font-medium text-gray-900 mb-6">Financial Summary</h3>
-            <SupplierGridLayout columns={3} gap={6}>
+            <SupplierGridLayout columns="3" gap={6}>
               <div>
                 <h4 className="text-sm font-medium text-gray-500">Total Revenue</h4>
                 <p className="mt-1 text-2xl font-semibold text-gray-900">{formatCurrency(report.summary.total_revenue)}</p>
@@ -369,7 +369,7 @@ const SupplierFinancial: React.FC = () => {
         <div className="space-y-6">
           <SupplierCardLayout>
             <h3 className="text-lg font-medium text-gray-900 mb-6">Tax Year {taxReport.tax_year} Summary</h3>
-            <SupplierGridLayout columns={4} gap={6}>
+            <SupplierGridLayout columns="4" gap={6}>
               <div>
                 <h4 className="text-sm font-medium text-gray-500">Total Orders</h4>
                 <p className="mt-1 text-2xl font-semibold text-gray-900">{taxReport.annual_total.total_orders}</p>
@@ -395,7 +395,7 @@ const SupplierFinancial: React.FC = () => {
               {taxReport.quarterly_totals.map((quarter, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4">
                   <h4 className="font-medium text-gray-900 mb-3">Q{quarter.quarter} {taxReport.tax_year}</h4>
-                  <SupplierGridLayout columns={4} gap={4}>
+                  <SupplierGridLayout columns="4" gap={4}>
                     <div>
                       <span className="text-sm text-gray-500">Orders</span>
                       <p className="font-medium text-gray-900">{quarter.orders}</p>
@@ -462,7 +462,7 @@ const SupplierFinancial: React.FC = () => {
         <div className="space-y-6">
           <SupplierCardLayout>
             <h3 className="text-lg font-medium text-gray-900 mb-6">Commission Summary</h3>
-            <SupplierGridLayout columns={4} gap={6}>
+            <SupplierGridLayout columns="4" gap={6}>
               <div>
                 <h4 className="text-sm font-medium text-gray-500">Total Gross Revenue</h4>
                 <p className="mt-1 text-2xl font-semibold text-gray-900">{formatCurrency(commissionBreakdown.total_summary.total_gross_revenue)}</p>

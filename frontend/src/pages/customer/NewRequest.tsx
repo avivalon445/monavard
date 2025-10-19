@@ -138,7 +138,13 @@ const NewRequest: React.FC = () => {
     return true;
   };
 
-  const handleNext = () => {
+  const handleNext = (e?: React.MouseEvent) => {
+    // Prevent form submission when clicking Next button
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (validateStep(currentStep)) {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
@@ -154,8 +160,10 @@ const NewRequest: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Only submit on the final step
+    // Only submit on the final step (step 3)
     if (currentStep < 3) {
+      // This should not happen with proper button handling, but as a safety measure
+      console.warn('Form submitted on non-final step, this should not happen');
       handleNext();
       return;
     }
@@ -172,6 +180,9 @@ const NewRequest: React.FC = () => {
       const submitData = {
         ...formData,
         priorities: JSON.stringify(formData.priorities),
+        budget_min: formData.budget_min === null ? undefined : formData.budget_min,
+        budget_max: formData.budget_max === null ? undefined : formData.budget_max,
+        category_id: formData.category_id === null ? undefined : formData.category_id,
       };
       
       const response = await requestService.createRequest(submitData);
@@ -179,7 +190,7 @@ const NewRequest: React.FC = () => {
       if (response.success) {
         setSuccess(true);
         setTimeout(() => {
-          navigate(`/customer/requests/${response.data.id}`);
+          navigate(`/customer/requests/${response.data?.id}`);
         }, 2000);
       } else {
         setError(response.message || 'Failed to create request');
@@ -713,7 +724,7 @@ const NewRequest: React.FC = () => {
               </button>
 
               {currentStep < 3 ? (
-                <button type="button" onClick={handleNext} className="btn btn-primary">
+                <button type="button" onClick={(e) => handleNext(e)} className="btn btn-primary">
                   Next
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

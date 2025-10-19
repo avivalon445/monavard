@@ -266,7 +266,7 @@ const SupplierOrders: React.FC = () => {
         </SupplierCardLayout>
       ) : (
         <>
-          <SupplierGridLayout columns={1} gap={4}>
+          <SupplierGridLayout columns="1" gap={4}>
             {orders.map((order) => (
               <SupplierCardLayout key={order.id} hover>
                 <div className="flex items-start justify-between">

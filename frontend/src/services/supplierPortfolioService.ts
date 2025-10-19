@@ -91,7 +91,7 @@ export const supplierPortfolioService = {
   /**
    * Get supplier portfolio
    */
-  async getPortfolio(filters: PortfolioFilters = {}): Promise<ApiResponse<PortfolioItem[], Pagination>> {
+  async getPortfolio(filters: PortfolioFilters = {}): Promise<ApiResponse<PortfolioItem[]>> {
     const params = new URLSearchParams();
     if (filters.category_id) params.append('category_id', filters.category_id.toString());
     if (filters.is_featured !== undefined) params.append('is_featured', filters.is_featured.toString());

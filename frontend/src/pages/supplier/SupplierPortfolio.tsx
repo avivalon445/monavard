@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supplierPortfolioService, PortfolioItem, PortfolioFilters, CreatePortfolioItemData, UpdatePortfolioItemData, PortfolioStatistics } from '@/services/supplierPortfolioService';
+import { supplierPortfolioService, PortfolioItem, PortfolioFilters, CreatePortfolioItemData, PortfolioStatistics } from '@/services/supplierPortfolioService';
 import { categoryService } from '@/services/categoryService';
 import { getUserFriendlyError } from '@/utils/errorMessages';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -38,7 +38,7 @@ const SupplierPortfolio: React.FC = () => {
     completion_date: '',
     client_name: '',
     project_value: undefined,
-    tags: '',
+    technologies: [],
     is_featured: false,
     display_order: 0
   });
@@ -70,7 +70,7 @@ const SupplierPortfolio: React.FC = () => {
     try {
       const response = await categoryService.getAllCategories();
       if (response.success) {
-        setCategories(response.data);
+        setCategories(response.data || []);
       }
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -81,7 +81,7 @@ const SupplierPortfolio: React.FC = () => {
     try {
       const response = await supplierPortfolioService.getPortfolioStatistics();
       if (response.success) {
-        setStatistics(response.data);
+        setStatistics(response.data || null);
       }
     } catch (err) {
       console.error('Error fetching statistics:', err);
@@ -110,7 +110,7 @@ const SupplierPortfolio: React.FC = () => {
           completion_date: '',
           client_name: '',
           project_value: undefined,
-          tags: '',
+          technologies: [],
           is_featured: false,
           display_order: 0
         });
@@ -148,7 +148,7 @@ const SupplierPortfolio: React.FC = () => {
           completion_date: '',
           client_name: '',
           project_value: undefined,
-          tags: '',
+          technologies: [],
           is_featured: false,
           display_order: 0
         });
@@ -192,7 +192,7 @@ const SupplierPortfolio: React.FC = () => {
     try {
       const response = await supplierPortfolioService.toggleFeaturedStatus(itemId);
       if (response.success) {
-        setSuccess(`Portfolio item ${response.data.is_featured ? 'featured' : 'unfeatured'} successfully`);
+        setSuccess(`Portfolio item ${response.data?.is_featured ? 'featured' : 'unfeatured'} successfully`);
         fetchPortfolioData();
         fetchStatistics();
       } else {
@@ -216,7 +216,7 @@ const SupplierPortfolio: React.FC = () => {
       completion_date: item.completion_date || '',
       client_name: item.client_name || '',
       project_value: item.project_value,
-      tags: item.tags || '',
+      technologies: Array.isArray(item.technologies) ? item.technologies : (item.technologies ? [item.technologies] : []),
       is_featured: item.is_featured,
       display_order: item.display_order
     });
@@ -316,7 +316,7 @@ const SupplierPortfolio: React.FC = () => {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {statistics && (
-            <SupplierGridLayout columns={4} gap={6}>
+            <SupplierGridLayout columns="4" gap={6}>
               <SupplierCardLayout>
                 <h4 className="text-sm font-medium text-gray-500">Total Items</h4>
                 <p className="mt-1 text-3xl font-semibold text-gray-900">{statistics.total_items}</p>
@@ -336,7 +336,7 @@ const SupplierPortfolio: React.FC = () => {
             </SupplierGridLayout>
           )}
 
-          <SupplierGridLayout columns={2} gap={6}>
+          <SupplierGridLayout columns="2" gap={6}>
             <SupplierCardLayout>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Portfolio Items</h3>
               {portfolio.slice(0, 5).length === 0 ? (
@@ -474,7 +474,7 @@ const SupplierPortfolio: React.FC = () => {
               </div>
             </SupplierCardLayout>
           ) : (
-            <SupplierGridLayout columns={3} gap={6}>
+            <SupplierGridLayout columns="3" gap={6}>
               {portfolio.map((item) => (
                 <SupplierCardLayout key={item.id} className="relative">
                   {item.is_featured && (
@@ -550,7 +550,7 @@ const SupplierPortfolio: React.FC = () => {
 
       {activeTab === 'statistics' && statistics && (
         <div className="space-y-6">
-          <SupplierGridLayout columns={2} gap={6}>
+          <SupplierGridLayout columns="2" gap={6}>
             <SupplierCardLayout>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Portfolio Overview</h3>
               <dl className="space-y-3">
@@ -729,13 +729,13 @@ const SupplierPortfolio: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Technologies</label>
                   <input
                     type="text"
-                    value={itemForm.tags || ''}
-                    onChange={(e) => setItemForm({ ...itemForm, tags: e.target.value })}
+                    value={Array.isArray(itemForm.technologies) ? itemForm.technologies.join(', ') : ''}
+                    onChange={(e) => setItemForm({ ...itemForm, technologies: e.target.value.split(',').map(t => t.trim()).filter(t => t) })}
                     className="input"
-                    placeholder="Separate tags with commas"
+                    placeholder="Separate technologies with commas"
                   />
                 </div>
                 

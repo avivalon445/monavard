@@ -228,7 +228,7 @@ const BidDetails: React.FC = () => {
               <p className="text-3xl font-bold text-purple-900">
                 {bid.anonymous_rating ? `${Number(bid.anonymous_rating).toFixed(1)} ⭐` : 'N/A'}
               </p>
-              {bid.anonymous_review_count > 0 && (
+              {(bid.anonymous_review_count ?? 0) > 0 && (
                 <p className="text-xs text-purple-700 mt-1">{bid.anonymous_review_count} reviews</p>
               )}
             </div>
